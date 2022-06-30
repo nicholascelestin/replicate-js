@@ -8,7 +8,7 @@ You can run a model and get its output:
 
 **From The Browser**
 ```javascript
-import Replicate from 'replicate-js'
+import Replicate from './replicate.js'
 // NEVER put your token in any publically accessible client-side Javascript
 // Instead, use a proxy-- see cors-proxy.js
 let replicate = new Replicate({proxy_url: "http://localhost:3000/api"});
@@ -18,7 +18,7 @@ let prediction = await model.predict({ text: "why"});
 
 **From Node**
 ```javascript
-import Replicate from 'replicate-js'
+import Replicate from './replicate.js'
 let replicate = new Replicate({token: "YOUR_TOKEN"});
 let model = await replicate.models.get('replicate/hello-world');
 let prediction = await model.predict({ text: "why"});
