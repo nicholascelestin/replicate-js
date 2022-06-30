@@ -2,6 +2,8 @@
 
 This is a Javacript client for Replicate. It lets you run models from your browser or node.
 
+WIP, needs to be bundled and built for both.
+
 You can run a model and get its output:
 
 **From The Browser**
