@@ -56,16 +56,18 @@ class Model {
 
 class Replicate {
     constructor(options){
+        options = options ?? {};
         if(isNode && process.env.REPLICATE_API_TOKEN)
             this.token = process.env.REPLICATE_API_TOKEN;
-        if(options && options.token)
+        if(options.token)
             this.token = options.token
-        if(!this.token)
+        if(!this.token && this.proxy_url)
             throw 'Missing Replicate token'
 
+        let proxyPrefix = options.proxyUrl ? `${options.proxyUrl}/` : '';
+        console.log('proxyUrl', `${proxyPrefix}${BASE_URL}`);
         this.httpClient = axios.create({
-            baseURL: BASE_URL,
-            timeout: 1000,
+            baseURL: `${proxyPrefix}${BASE_URL}`,
             headers: {'Authorization': `Token ${this.token}`}
         });
         this.models = {get: this.getModel.bind(this)}

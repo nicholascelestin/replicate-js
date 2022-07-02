@@ -1,8 +1,8 @@
 # Replicate Javascript client
 
-This is a Javacript client for Replicate. It lets you run models from your browser or node.
+This is a Javacript client for Replicate. It lets you run models from your browser or node. It is promise-based and designed with async / await in mind.
 
-WIP, needs to be bundled and built for both.
+Also full on WIP and may or may not work precisely as documented. YMMV.
 
 You can run a model and get its output:
 
@@ -11,7 +11,7 @@ You can run a model and get its output:
 import Replicate from './replicate.js'
 // NEVER put your token in any publically accessible client-side Javascript
 // Instead, use a proxy-- see cors-proxy.js
-let replicate = new Replicate({proxy_url: "http://localhost:3000/api"});
+let replicate = new Replicate({proxyUrl: "http://localhost:3000"});
 let model = await replicate.models.get('replicate/hello-world');
 let prediction = await model.predict({ text: "why"});
 ```
@@ -27,15 +27,17 @@ let prediction = await model.predict({ text: "why"});
 You can run a model and feed the output into another model:
 
 ```javascript
-let image = await replicate.models.get('afiaka87/laionide-v4').predict({prompt: "avocado armchair"});
-let upscaledImage = replicate.models.get("jingyunliang/swinir").predict({image: image})
+let model1 = await replicate.models.get('afiaka87/laionide-v4')
+let image = await model1.predict({prompt: "avocado armchair"});
+let model2 = await replicate.models.get("jingyunliang/swinir");
+let upscaledImage = await model2.predict({image: image})
 ```
 
 Run a model and get its output while it's running:
 
 ```javascript
-let model = replicate.models.get("pixray/text2image")
-let predictor = model.predictor({ prompts: "san francisco sunset"})
+let model = await replicate.models.get("pixray/text2image")
+let predictor = await model.predictor({ prompts: "san francisco sunset"})
 for await(let prediction of predictor){
     console.log(prediction);
 }
@@ -44,8 +46,8 @@ for await(let prediction of predictor){
 By default, `model.predict()` uses the latest version. If you want to pin to a particular version, you can get a version with its ID:
 
 ```javascript
-let model = replicate.models.get("replicate/hello-world")
-let versionedModel = replicate.models.get("replicate/hello-world","5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa");
+let model = await replicate.models.get("replicate/hello-world")
+let versionedModel = await replicate.models.get("replicate/hello-world","5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa");
 ```
 
 ## Install
