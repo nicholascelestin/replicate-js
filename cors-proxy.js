@@ -1,12 +1,11 @@
 import express from 'express'
 import  {createProxyMiddleware}  from 'http-proxy-middleware';
-// import {REPLICATE_TOKEN} from './auth.js'
 
 // Configuration
-const API_SERVICE_URL = "https://api.replicate.com";
+const REPLICATE_TOKEN = process.env.REPLICATE_API_TOKEN;
 
 const appendAuthHeaders = (proxyReq) => {
-    proxyReq.setHeader('Authorization', `Token ${YOUR_TOKEN}`)
+    proxyReq.setHeader('Authorization', `Token ${REPLICATE_TOKEN}`)
 }
 
 const onProxyRes = (proxyRes) => {
@@ -17,9 +16,9 @@ const onProxyRes = (proxyRes) => {
 
 const app = express();
 app.use(
-    '/',
+    '/api/',
     createProxyMiddleware({
-        router: (req) => req.originalUrl.replace('/', ''),
+        router: (req) => req.originalUrl.replace(/.*https?:\/\//, 'https://'),
         changeOrigin: true,
         pathRewrite: {'.*' : ''},
         onProxyReq: appendAuthHeaders,
