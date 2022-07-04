@@ -22,6 +22,8 @@ console.log(helloWorldPrediction);
 
 **From Node**
 
+Uses ES6-style module imports. Either set `type` to `module` in your package.json file or use a `.mjs` file extension
+
 ```javascript
 import Replicate from 'replicate-js'
 // Set REPLICATE_API_TOKEN environment variable before running.
