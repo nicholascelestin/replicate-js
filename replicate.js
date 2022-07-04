@@ -67,6 +67,7 @@ class Replicate {
         if(!this.token && this.proxy_url)
             throw 'Missing Replicate token'
 
+        let axios;
         if(isBrowser)
             axios = await import('https://unpkg.com/axios')
         else
