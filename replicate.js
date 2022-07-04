@@ -1,7 +1,8 @@
-const isBrowser =
-  typeof window !== "undefined" && typeof window.document !== "undefined";
-import {isNode} from `${isBrowser?'http://unpkg.com/' : ''}browser-or-node`;
-import axios from `${isBrowser?'http://unpkg.com/' : ''}axios`;
+const isBrowser = typeof window !== "undefined" && typeof window.document !== "undefined";
+const isNode = typeof process !== "undefined" && process.versions != null && process.versions.node != null;
+
+// import {isNode} from `browser-or-node`;
+// import axios from `axios`;
 
 const BASE_URL = "https://api.replicate.com/v1"
 
@@ -66,6 +67,10 @@ class Replicate {
         if(!this.token && this.proxy_url)
             throw 'Missing Replicate token'
 
+        if(isBrowser)
+            axios = await import('https://unpkg.com/axios')
+        else
+            axios = await import('axios');
         let proxyPrefix = options.proxyUrl ? `${options.proxyUrl}/` : '';
         console.log('proxyUrl', `${proxyPrefix}${BASE_URL}`);
         this.httpClient = axios.create({
