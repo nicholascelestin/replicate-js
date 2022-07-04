@@ -6,7 +6,7 @@ let replicate = new Replicate();
 // Hello World - Sanity Test
 let helloWorldModel = await replicate.models.get('replicate/hello-world');
 let helloWorldPrediction = await helloWorldModel.predict({ text: "test"});
-console.log(helloWorldPrediction); // 'hello why'
+console.log(helloWorldPrediction); // 'hello test'
 
 // Laion Erlich - Generate Logo From Prompt
 let erlichModel = await replicate.models.get('laion-ai/erlich');
@@ -22,3 +22,12 @@ for await(let prediction of erlichPredictor){
 let swinModel = await replicate.models.get('jingyunliang/swinir');
 let swinPrediction = await swinModel.predict({ image: erlichPrediction[0]});
 console.log(swinPrediction); // {file: 'https://replicate.com/api/models/jingyunliang/swinir/files/0d95b680-b8c4-4cf0-a590-8f1f01dfda72/out.png'}
+
+// DALLE MINI + SWIN IR
+let dalleMiniModel = await replicate.models.get('kuprel/min-dalle')
+let dalleMiniImage = await dalleMiniModel.predict({text: "avocado armchair", grid_size: 1});
+let model2 = await replicate.models.get("jingyunliang/swinir");
+let upscaledImage = await model2.predict({image: dalleMiniImage})
+console.log(upscaledImage);
+
+
