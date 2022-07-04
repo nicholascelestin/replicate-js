@@ -1,5 +1,7 @@
-import {isNode} from "browser-or-node";
-import axios from "axios";
+const isBrowser =
+  typeof window !== "undefined" && typeof window.document !== "undefined";
+import {isNode} from `${isBrowser?'http://unpkg.com/' : ''}browser-or-node`;
+import axios from `${isBrowser?'http://unpkg.com/' : ''}axios`;
 
 const BASE_URL = "https://api.replicate.com/v1"
 
