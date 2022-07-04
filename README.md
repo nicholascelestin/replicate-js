@@ -8,7 +8,7 @@ You can run a model and get its output:
 ```html
 <script type="module">
 // replace @main with @branch-name or @commit-sha for more specific version
-import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@main/replicate.js"
+import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@v0.0.2/replicate.js"
 
 // NEVER put your token in any publically accessible client-side Javascript
 // Instead, use a proxy-- see Authentication section below
@@ -68,7 +68,7 @@ let versionedModel = await replicate.models.get("replicate/hello-world","5c7d5dc
 ```html
 <script type="module">
 // replace @main with @branch-name or @commit-sha for more specific version
-import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@main/replicate.js"
+import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@v0.0.2/replicate.js"
 </script>
 ```
 
