@@ -2,7 +2,7 @@
   "name": "replicate-js",
   "version": "0.0.1",
   "description": "WIP Replicate JS Client",
-  "main": "replicate.js",
+  "exports": "./replicate.js",
   "type": "module",
   "dependencies": {
     "axios": "^0.27.2",
