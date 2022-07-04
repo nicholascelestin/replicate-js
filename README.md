@@ -7,7 +7,7 @@ You can run a model and get its output:
 **From The Browser**
 ```html
 <script type="module">
-// replace @main with @branch-name or @commit-sha for more specific version
+// replace @v0.0.2 with @branch-name or @commit-sha for more specific version
 import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@v0.0.2/replicate.js"
 
 // NEVER put your token in any publically accessible client-side Javascript
