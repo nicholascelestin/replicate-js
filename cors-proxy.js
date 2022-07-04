@@ -16,9 +16,9 @@ const onProxyRes = (proxyRes) => {
 
 const app = express();
 app.use(
-    '/',
+    '/api/',
     createProxyMiddleware({
-        router: (req) => req.originalUrl.replace('/', ''),
+        router: (req) => req.originalUrl.replace(/.*https?:\/\//, 'https://'),
         changeOrigin: true,
         pathRewrite: {'.*' : ''},
         onProxyReq: appendAuthHeaders,

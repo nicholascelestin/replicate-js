@@ -1,9 +1,7 @@
 import Replicate from '../replicate.js'
-// Uncomment and run cors-proxy for use in browser
-//let replicate = new Replicate({proxyUrl: "http://localhost:3000"});
 
-// Uncomment and replace with your token for use in node. 
-// let replicate = new Replicate({token: "putTokenHere"});
+// Set REPLICATE_API_TOKEN environment variable before running.
+let replicate = new Replicate();
 
 // Hello World - Sanity Test
 let helloWorldModel = await replicate.models.get('replicate/hello-world');

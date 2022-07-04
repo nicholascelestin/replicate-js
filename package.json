@@ -1,12 +1,11 @@
 {
   "name": "replicate-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "WIP Replicate JS Client",
   "main": "replicate.js",
   "type": "module",
   "dependencies": {
     "axios": "^0.27.2",
-    "browser-or-node": "^2.0.0",
     "express": "^4.18.1",
     "http-proxy-middleware": "^2.0.6"
   },
