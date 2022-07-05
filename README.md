@@ -21,6 +21,7 @@ console.log(helloWorldPrediction);
 ```
 
 **From Node**
+`npm install github:nicholascelestin/replicate-js --save`
 
 Uses ES6-style module imports. Either set `type` to `module` in your package.json file or use a `.mjs` file extension
 
