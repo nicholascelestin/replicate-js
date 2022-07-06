@@ -21,7 +21,7 @@ console.log(helloWorldPrediction);
 ```
 
 **From Node**
-`npm install github:nicholascelestin/replicate-js --save`
+`npm install github:nicholascelestin/replicate-js`
 
 Uses ES6-style module imports. Either set `type` to `module` in your package.json file or use a `.mjs` file extension
 
@@ -65,7 +65,7 @@ let versionedModel = await replicate.models.get("replicate/hello-world","5c7d5dc
 ## Installation
 
 **Node**
-`npm install github:nicholascelestin/replicate-js --save`
+`npm install github:nicholascelestin/replicate-js`
 
 **Browser**
 ```html
