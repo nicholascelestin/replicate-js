@@ -12,10 +12,10 @@ import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js
 
 // NEVER put your token in any publically accessible client-side Javascript
 // Instead, use a proxy-- see Authentication section below
-let replicate = new Replicate({proxyUrl: 'http://localhost:3000/api'});
+const replicate = new Replicate({proxyUrl: 'http://localhost:3000/api'});
 
-let helloWorldModel = await replicate.models.get('replicate/hello-world');
-let helloWorldPrediction = await helloWorldModel.predict({ text: "test"});
+const helloWorldModel = await replicate.models.get('replicate/hello-world');
+const helloWorldPrediction = await helloWorldModel.predict({ text: "test"});
 console.log(helloWorldPrediction);
 </script>
 ```
@@ -28,29 +28,29 @@ Uses ES6-style module imports. Either set `type` to `module` in your package.jso
 ```javascript
 import Replicate from 'replicate-js'
 // Set REPLICATE_API_TOKEN environment variable before running.
-let replicate = new Replicate({token: 'YOUR_TOKEN'});
+const replicate = new Replicate({token: 'YOUR_TOKEN'});
 
-let helloWorldModel = await replicate.models.get('replicate/hello-world');
-let helloWorldPrediction = await helloWorldModel.predict({ text: "test"});
+const helloWorldModel = await replicate.models.get('replicate/hello-world');
+const helloWorldPrediction = await helloWorldModel.predict({ text: "test"});
 console.log(helloWorldPrediction);
 ```
 
 You can run a model and feed the output into another model:
 
 ```javascript
-let model1 = await replicate.models.get('kuprel/min-dalle')
-let image = await model1.predict({text: "avocado armchair", grid_size: 1});
-let model2 = await replicate.models.get("jingyunliang/swinir");
-let upscaledImage = await model2.predict({image: image})
+const model1 = await replicate.models.get('kuprel/min-dalle')
+const image = await model1.predict({text: "avocado armchair", grid_size: 1});
+const model2 = await replicate.models.get("jingyunliang/swinir");
+const upscaledImage = await model2.predict({image: image})
 console.log(upscaledImage);
 ```
 
 Run a model and get its output while it's running:
 
 ```javascript
-let erlichModel = await replicate.models.get('laion-ai/erlich');
-let erlichPredictor = erlichModel.predictor({ prompt: "test", steps: 50, intermediate_outputs: true, batch_size:2});
-for await(let prediction of erlichPredictor){
+const erlichModel = await replicate.models.get('laion-ai/erlich');
+const erlichPredictor = erlichModel.predictor({ prompt: "test", steps: 50, intermediate_outputs: true, batch_size:2});
+for await(const prediction of erlichPredictor){
     console.log(prediction);
 }
 ```
@@ -58,8 +58,8 @@ for await(let prediction of erlichPredictor){
 By default, `model.predict()` uses the latest version. If you want to pin to a particular version, you can get a version with its ID:
 
 ```javascript
-let model = await replicate.models.get("replicate/hello-world")
-let versionedModel = await replicate.models.get("replicate/hello-world","5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa");
+const model = await replicate.models.get("replicate/hello-world")
+const versionedModel = await replicate.models.get("replicate/hello-world","5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa");
 ```
 
 ## Installation
@@ -83,7 +83,7 @@ In a Node.js environment, you can set the `REPLICATE_API_TOKEN` environment vari
 You can also pass your API token directly to the Replicate constructor.
 
 ```javascript
-let replicate = new Replicate({token: 'YOUR_TOKEN'});
+const replicate = new Replicate({token: 'YOUR_TOKEN'});
 ```
 
 **Browser**
@@ -96,6 +96,6 @@ Never expose your API token in any publicly accessible client-side Javascript. I
 ```html
 <script type="module">
     import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@main/replicate.js"
-    let replicate = new Replicate({proxyUrl: 'http://localhost:3000/api'});
+    const replicate = new Replicate({proxyUrl: 'http://localhost:3000/api'});
 </script>
 ```
