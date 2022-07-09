@@ -26,8 +26,7 @@ console.log(swinPrediction); // {file: 'https://replicate.com/api/models/jingyun
 // DALLE MINI + SWIN IR
 let dalleMiniModel = await replicate.models.get('kuprel/min-dalle')
 let dalleMiniImage = await dalleMiniModel.predict({text: "avocado armchair", grid_size: 1});
-let model2 = await replicate.models.get("jingyunliang/swinir");
-let upscaledImage = await model2.predict({image: dalleMiniImage})
-console.log(upscaledImage);
+let upscaledImage = await swinModel.predict({image: dalleMiniImage.pop()})
+console.log(upscaledImage); //0: {file: 'https://replicate.com/api/models/jingyunliang/…/721dffa9-6914-4dbc-935a-6118d9b98788/out.png'}
 
 
