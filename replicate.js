@@ -2,7 +2,14 @@ const BASE_URL = "https://api.replicate.com/v1"
 const POLLING_INTERVAL = 5000
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms))
-const isNode = typeof process !== "undefined" && process.versions != null && process.versions.node != null;
+
+let fetch = globalThis?.fetch;
+const isNode = process?.versions?.node;
+
+// This code uses fetch, which is still experimental in Node 18, so we import a polyfill for Node
+if (!fetch && isNode) {
+    fetch = (await import('node-fetch')).default;
+}
 
 class Replicate {
     constructor(options) {
@@ -19,9 +26,6 @@ class Replicate {
     }
 
     async getModel(path, version) {
-        // This code uses fetch, which is still experimental in Node 18, so we import a polyfill for Node
-        if(isNode)
-            await import('node-fetch'); 
         this.httpClient = new HTTPClient({proxyUrl: this.proxyUrl, token: this.token});
         return await Model.fetch({ path: path, version: version, httpClient: this.httpClient});
     }
