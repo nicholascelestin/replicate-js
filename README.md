@@ -1,6 +1,6 @@
 # Replicate Javascript client
 
-This is a Javacript client for Replicate. It lets you run models from your browser or node. It is promise-based and designed with async / await in mind.
+This is a Javacript client for Replicate. It lets you run models from your browser, from node, or from a web worker. It is promise-based and designed with async / await in mind.
 
 # Getting Started
 
@@ -34,6 +34,8 @@ Works with Node v16 and up.
 Depends on node-fetch.
 
 Uses ES6-style module imports. Either set `type` to `module` in your package.json file or use a `.mjs` file extension
+
+## Usage
 
 ```javascript
 import Replicate from 'replicate-js'
