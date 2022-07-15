@@ -67,10 +67,10 @@ class Model {
     }
 
     async *predictor(input) {
-        let predictionId = await this.startPrediction(input);
+        const predictionId = await this.startPrediction(input);
         let predictionStatus;
         do {
-            let checkResponse = await this.httpClient.get(`/predictions/${predictionId}`)
+            const checkResponse = await this.httpClient.get(`/predictions/${predictionId}`)
             predictionStatus = checkResponse.status;
             await sleep(this.pollingInterval);
             yield checkResponse.output;
@@ -78,8 +78,8 @@ class Model {
     }
 
     async startPrediction(input) {
-        let startRequest = { "version": this.modelDetails.id, "input": input };
-        let prediction = await this.httpClient.post(`/predictions`, startRequest);
+        const startRequest = { "version": this.modelDetails.id, "input": input };
+        const prediction = await this.httpClient.post(`/predictions`, startRequest);
         return prediction.id;
     }
 
@@ -108,13 +108,13 @@ export class HTTPClient{
     }
 
     async get(url){
-        let response = await fetch(`${this.baseUrl}${url}`, { headers: this.headers });
+        const response = await fetch(`${this.baseUrl}${url}`, { headers: this.headers });
         return await response.json();
     }
 
     async post(url, body){
-        let fetchOptions = { method: 'POST', headers: this.headers, body: JSON.stringify(body) }
-        let response = await fetch(`${this.baseUrl}${url}`, fetchOptions);
+        const fetchOptions = { method: 'POST', headers: this.headers, body: JSON.stringify(body) }
+        const response = await fetch(`${this.baseUrl}${url}`, fetchOptions);
         return await response.json();
     }
 }
