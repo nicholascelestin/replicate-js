@@ -7,8 +7,6 @@ import {HTTPClient} from './replicate.js'
 class MockHttpClient {
     constructor(httpResponseMocks){
         for (const [httpVerb, mockedResponse] of Object.entries(httpResponseMocks)) {
-            httpVerb
-            mockedResponse
             let timelineOfResponses = mockedResponse instanceof Array ? mockedResponse : [mockedResponse];
             let currentResponseIndex = 0;
             let mockedHttpFunction = () => 
