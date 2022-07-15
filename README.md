@@ -29,6 +29,8 @@ console.log(helloWorldPrediction);
 
 `npm install node-fetch`
 
+Works with Node v16 and up.
+
 Depends on node-fetch.
 
 Uses ES6-style module imports. Either set `type` to `module` in your package.json file or use a `.mjs` file extension
