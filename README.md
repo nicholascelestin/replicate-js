@@ -122,7 +122,7 @@ This library will work in a browser, but:
 
 If you do so, you run the risk of your API token being stolen or being charged for unauthorized usage.
 
-However, for private development and testing, you can use the lightweight proxy bundled in this repository.
+However, for private development and testing, you can use the lightweight proxy bundled in this repository. A proxy is necessary to avoid CORS issues with the Replicate HTTP API.
 
 `export REPLICATE_API_TOKEN=<your token>`
 
