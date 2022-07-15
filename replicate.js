@@ -1,5 +1,5 @@
 const BASE_URL = "https://api.replicate.com/v1"
-const POLLING_INTERVAL = 5000
+const DEFAULT_POLLING_INTERVAL = 5000
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms))
 const isNode = typeof process !== "undefined" && process.versions != null && process.versions.node != null;
@@ -9,26 +9,41 @@ if(isNode)
     globalThis.fetch = (await import('node-fetch'))['default'];
 
 class Replicate {
+
+    token;
+    proxyUrl;
+    httpClient;
+    pollingInterval;
+
     constructor(options) {
-        this.token = options?.token;
-        this.proxyUrl = options?.proxyUrl ?? '';
+        Object.assign(this, options);
 
-        if (!this.token && isNode && process?.env?.REPLICATE_API_TOKEN)
-            this.token = process.env.REPLICATE_API_TOKEN;
+         // Uses some lesser-known operators to make null-safety easy
+        this.pollingInterval ||= DEFAULT_POLLING_INTERVAL;
+        this.token ||= process?.env?.REPLICATE_API_TOKEN;
         if (!this.token && !this.proxyUrl)
-            throw 'Missing Replicate token'
+            throw new Error('Missing Replicate token')
 
+        // Depedency injection for tests
+        if(!this.httpClient)
+            this.httpClient = new HTTPClient({proxyUrl: this.proxyUrl, token: this.token});
+        
         // Syntax sugar to support replicate.models.get()
         this.models = { get: this.getModel.bind(this) }
     }
 
     async getModel(path, version) {
-        this.httpClient = new HTTPClient({proxyUrl: this.proxyUrl, token: this.token});
-        return await Model.fetch({ path: path, version: version, httpClient: this.httpClient});
+        return await Model.fetch({ path: path, version: version, replicate: this});
     }
 }
 
 class Model {
+    
+    path;
+    version;
+    httpClient;
+    pollingInterval;
+
     static async fetch(options){
         const model = new Model(options);
         await model.getModelDetails();
@@ -36,9 +51,8 @@ class Model {
     }
     
     constructor(options) {
-        this.path = options.path;
-        this.version = options.version;
-        this.httpClient = options.httpClient;
+        Object.assign(this, options) //path, version
+        Object.assign(this, options.replicate) //httpClient, pollingInterval
     }
 
     async getModelDetails() {
@@ -47,35 +61,31 @@ class Model {
         const mostRecentVersion = modelVersions[0];
         const explicitlySelectedVersion = modelVersions.find((m) => m.id == this.version);
         this.modelDetails = explicitlySelectedVersion ? explicitlySelectedVersion : mostRecentVersion;
+        if(this.version && this.version !== this.modelDetails.id){
+            console.warn(`Model (version:${this.version}) not found, defaulting to ${mostRecentVersion.id}`);
+        }
     }
 
     async *predictor(input) {
-        if (!this.modelDetails)
-            await this.getModelDetails()
-
         let predictionId = await this.startPrediction(input);
         let predictionStatus;
         do {
             let checkResponse = await this.httpClient.get(`/predictions/${predictionId}`)
             predictionStatus = checkResponse.status;
-            let latestPrediction = checkResponse.output;
-            await sleep(POLLING_INTERVAL);
-            yield latestPrediction;
-
+            await sleep(this.pollingInterval);
+            yield checkResponse.output;
         } while (['starting', 'processing'].includes(predictionStatus))
     }
 
     async startPrediction(input) {
         let startRequest = { "version": this.modelDetails.id, "input": input };
-        let startResponse = await this.httpClient.post(`/predictions`, startRequest);
-        let predictionId = startResponse.id;
-        return predictionId;
+        let prediction = await this.httpClient.post(`/predictions`, startRequest);
+        return prediction.id;
     }
 
     async predict(input) {
-        let predictor = this.predictor(input);
         let prediction;
-        for await (prediction of predictor) {
+        for await (prediction of this.predictor(input)) {
             // console.log(prediction);
         }
         return prediction;
@@ -83,7 +93,11 @@ class Model {
 }
 
 // This class just makes it a bit easier to call fetch -- interface similar to the axios library
-class HTTPClient{
+export class HTTPClient{
+
+    baseUrl;
+    headers;
+    
     constructor(options){
         this.baseUrl = options.proxyUrl ? `${options.proxyUrl}/${BASE_URL}` : BASE_URL;
         this.headers = {
@@ -92,10 +106,12 @@ class HTTPClient{
             'Accept': 'application/json' 
         }
     }
-    async get(url) {
+
+    async get(url){
         let response = await fetch(`${this.baseUrl}${url}`, { headers: this.headers });
         return await response.json();
     }
+
     async post(url, body){
         let fetchOptions = { method: 'POST', headers: this.headers, body: JSON.stringify(body) }
         let response = await fetch(`${this.baseUrl}${url}`, fetchOptions);

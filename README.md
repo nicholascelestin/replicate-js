@@ -72,6 +72,15 @@ const model = await replicate.models.get("replicate/hello-world")
 const versionedModel = await replicate.models.get("replicate/hello-world","5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa");
 ```
 
+By default,`new Replicate()` sets a polling interval of 5s. If you want it to poll at a diferent rate, you can set that option:
+
+```javascript
+const replicate = new Replicate({pollingInterval: 1000});
+const model = await replicate.models.get("replicate/hello-world")
+// Until finished, checks for new predictions every 1 second
+const prediction = await replicate.predict({ text: "test"});
+```
+
 # Installation
 
 ## For Node
