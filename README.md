@@ -10,8 +10,8 @@ You can run a model and get its output:
 
 ```html
 <script type="module">
-// replace @0.0.4 with @branch-name or @commit-sha for more specific version
-import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.4/replicate.js"
+// replace @0.0.5 with @branch-name or @commit-sha for more specific version
+import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.5/replicate.js"
 
 // NEVER put your token in any publically accessible client-side Javascript
 // Instead, use a proxy-- see Authentication section below
@@ -28,6 +28,8 @@ console.log(helloWorldPrediction);
 `npm install github:nicholascelestin/replicate-js`
 
 `npm install node-fetch`
+
+Works with Node v16 and up.
 
 Depends on node-fetch.
 
@@ -72,6 +74,15 @@ const model = await replicate.models.get("replicate/hello-world")
 const versionedModel = await replicate.models.get("replicate/hello-world","5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa");
 ```
 
+By default,`new Replicate()` sets a polling interval of 5s. If you want it to poll at a diferent rate, you can set that option:
+
+```javascript
+const replicate = new Replicate({pollingInterval: 1000});
+const model = await replicate.models.get("replicate/hello-world")
+// Until finished, checks for new predictions every 1 second
+const prediction = await replicate.predict({ text: "test"});
+```
+
 # Installation
 
 ## For Node
@@ -84,8 +95,8 @@ const versionedModel = await replicate.models.get("replicate/hello-world","5c7d5
 
 ```html
 <script type="module">
-// replace @main with @branch-name or @commit-sha for more specific version
-import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.4/replicate.js"
+// replace 0.0.5 with @branch-name or @commit-sha for more specific version
+import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.5/replicate.js"
 </script>
 ```
 
@@ -119,7 +130,7 @@ However, for private development and testing, you can use the lightweight proxy 
 
 ```html
 <script type="module">
-    import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.4/replicate.js"
+    import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.5/replicate.js"
     let replicate = new Replicate({proxyUrl: 'http://localhost:3000/api'});
 </script>
 ```
