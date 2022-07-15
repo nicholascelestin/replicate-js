@@ -48,7 +48,7 @@ const helloWorldPrediction = await helloWorldModel.predict({ text: "test"});
 console.log(helloWorldPrediction);
 ```
 
-## Usage
+# Usage
 
 You can run a model and feed the output into another model:
 
