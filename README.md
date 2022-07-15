@@ -35,8 +35,6 @@ Depends on node-fetch.
 
 Uses ES6-style module imports. Either set `type` to `module` in your package.json file or use a `.mjs` file extension
 
-## Usage
-
 ```javascript
 import Replicate from 'replicate-js'
 
@@ -49,6 +47,8 @@ const helloWorldModel = await replicate.models.get('replicate/hello-world');
 const helloWorldPrediction = await helloWorldModel.predict({ text: "test"});
 console.log(helloWorldPrediction);
 ```
+
+## Usage
 
 You can run a model and feed the output into another model:
 
