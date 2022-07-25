@@ -10,14 +10,12 @@ if(isNode)
 
 class Replicate {
 
-    token;
-    proxyUrl;
-    httpClient;
-    pollingInterval;
-
-    constructor(options) {
-        Object.assign(this, options);
-
+    constructor({token, proxyUrl, httpClient, pollingInterval} = {}) {
+        this.token = token;
+        this.proxyUrl = proxyUrl;
+        this.httpClient = httpClient;
+        this.pollingInterval = pollingInterval;
+        
          // Uses some lesser-known operators to make null-safety easy
         this.pollingInterval ||= DEFAULT_POLLING_INTERVAL;
         this.token ||= process?.env?.REPLICATE_API_TOKEN;
@@ -39,20 +37,17 @@ class Replicate {
 
 class Model {
     
-    path;
-    version;
-    httpClient;
-    pollingInterval;
-
     static async fetch(options){
         const model = new Model(options);
         await model.getModelDetails();
         return model;
     }
     
-    constructor(options) {
-        Object.assign(this, options) //path, version
-        Object.assign(this, options.replicate) //httpClient, pollingInterval
+    constructor({path, version, replicate}) {
+        this.path = path;
+        this.version = version;
+        this.httpClient = replicate.httpClient;
+        this.pollingInterval = replicate.pollingInterval;
     }
 
     async getModelDetails() {
@@ -73,6 +68,7 @@ class Model {
             const checkResponse = await this.httpClient.get(`/predictions/${predictionId}`)
             predictionStatus = checkResponse.status;
             await sleep(this.pollingInterval);
+            // TODO: only yield if there is a new prediction
             yield checkResponse.output;
         } while (['starting', 'processing'].includes(predictionStatus))
     }
@@ -95,13 +91,10 @@ class Model {
 // This class just makes it a bit easier to call fetch -- interface similar to the axios library
 export class HTTPClient{
 
-    baseUrl;
-    headers;
-    
-    constructor(options){
-        this.baseUrl = options.proxyUrl ? `${options.proxyUrl}/${BASE_URL}` : BASE_URL;
+    constructor({proxyUrl, token}){
+        this.baseUrl = proxyUrl ? `${proxyUrl}/${BASE_URL}` : BASE_URL;
         this.headers = {
-            'Authorization': `Token ${options.token}`,
+            'Authorization': `Token ${token}`,
             'Content-Type': 'application/json', 
             'Accept': 'application/json' 
         }
