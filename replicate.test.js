@@ -19,7 +19,7 @@ class MockHttpClient {
 }
 
 // Wipe out environment variables like REPLICATE_API_TOKEN for unit tests
-globalThis?.process?.env = {};
+globalThis.process.env = {};
 
 test('complains if no token or proxy url provided', t => {
     
