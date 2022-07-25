@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      REPLICATE_API_TOKEN: 123
     strategy:
       matrix:
         node-version: [16.x, 18.x]
@@ -19,8 +21,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-      env:
-        REPLICATE_API_TOKEN: 123
+
     - run: npm ci
     - run: npm test
     - run: npm run e2e
