@@ -18,7 +18,11 @@ class MockHttpClient {
     }
 }
 
+// Wipe out environment variables like REPLICATE_API_TOKEN for unit tests
+globalThis?.process?.env = {};
+
 test('complains if no token or proxy url provided', t => {
+    
     const error = t.throws(noop => new Replicate());
     t.is(error.message, 'Missing Replicate token');
 })
