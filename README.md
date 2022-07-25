@@ -1,6 +1,6 @@
 # Replicate Javascript client
 
-This is a Javacript client for Replicate. It lets you run models from your browser or node. It is promise-based and designed with async / await in mind.
+This is a Javacript client for Replicate. It lets you run models from your browser, from node, or from a web worker. It is promise-based and designed with async / await in mind.
 
 # Getting Started
 
@@ -47,6 +47,8 @@ const helloWorldModel = await replicate.models.get('replicate/hello-world');
 const helloWorldPrediction = await helloWorldModel.predict({ text: "test"});
 console.log(helloWorldPrediction);
 ```
+
+# Usage
 
 You can run a model and feed the output into another model:
 
@@ -122,7 +124,7 @@ This library will work in a browser, but:
 
 If you do so, you run the risk of your API token being stolen or being charged for unauthorized usage.
 
-However, for private development and testing, you can use the lightweight proxy bundled in this repository.
+However, for private development and testing, you can use the lightweight proxy bundled in this repository. A proxy is necessary to avoid CORS issues with the Replicate HTTP API.
 
 `export REPLICATE_API_TOKEN=<your token>`
 
