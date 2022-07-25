@@ -11,7 +11,8 @@
     "node-fetch": "^3.2.6"
   },
   "scripts": {
-    "test": "ava"
+    "test": "ava replicate.test.js",
+    "e2e": "ava replicate.e2e.js --timeout=5m"
   },
   "repository": {
     "type": "git",
