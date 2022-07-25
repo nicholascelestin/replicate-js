@@ -11,7 +11,7 @@ You can run a model and get its output:
 ```html
 <script type="module">
 // replace @0.0.5 with @branch-name or @commit-sha for more specific version
-import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.5/replicate.js"
+import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.6/replicate.js"
 
 // NEVER put your token in any publically accessible client-side Javascript
 // Instead, use a proxy-- see Authentication section below
@@ -98,7 +98,7 @@ const prediction = await replicate.predict({ text: "test"});
 ```html
 <script type="module">
 // replace 0.0.5 with @branch-name or @commit-sha for more specific version
-import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.5/replicate.js"
+import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.6/replicate.js"
 </script>
 ```
 
@@ -132,7 +132,7 @@ However, for private development and testing, you can use the lightweight proxy 
 
 ```html
 <script type="module">
-    import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.5/replicate.js"
+    import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.6/replicate.js"
     let replicate = new Replicate({proxyUrl: 'http://localhost:3000/api'});
 </script>
 ```
