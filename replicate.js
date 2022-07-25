@@ -18,7 +18,7 @@ class Replicate {
         
          // Uses some lesser-known operators to make null-safety easy
         this.pollingInterval ||= DEFAULT_POLLING_INTERVAL;
-        this.token ||= process?.env?.REPLICATE_API_TOKEN;
+        this.token ||= (process) ? process?.env?.REPLICATE_API_TOKEN : null;
         if (!this.token && !this.proxyUrl)
             throw new Error('Missing Replicate token')
 
