@@ -24,4 +24,5 @@ jobs:
 
     - run: npm ci
     - run: npm test
-    - run: npm run e2e
+    - run: npm run e2e-node
+    - run: npm run e2e-browser

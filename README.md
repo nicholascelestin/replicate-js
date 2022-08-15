@@ -10,8 +10,8 @@ You can run a model and get its output:
 
 ```html
 <script type="module">
-// replace @0.0.5 with @branch-name or @commit-sha for more specific version
-import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.6/replicate.js"
+// You can specify a specific version, branch, or sha: e.g. "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.6/replicate.js"
+import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js/replicate.js"
 
 // NEVER put your token in any publically accessible client-side Javascript
 // Instead, use a proxy-- see Authentication section below
@@ -85,6 +85,66 @@ const model = await replicate.models.get("replicate/hello-world")
 const prediction = await replicate.predict({ text: "test"});
 ```
 
+# Advanced Usage
+
+If you want to fetch a model's details directly, you can do so and handle the response data from the Replicate HTTP API yourself:
+
+```javascript
+const modelName = 'replicate/hello-world'
+const response = await replicate.getModel(modelName);
+const mostRecentVersion = response.results[0].id;
+```
+
+
+If you know the specific version of the model you want to call, you can start a prediction directly and handle the response yourself:
+
+```javascript
+const mostRecentVersion = '5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa'
+const response = await replicate.startPrediction(modelVersion, {text: "avocado armchair"});
+const predictionId = response.id;
+```
+
+If you know the id of a prediction you want to get the status of, you can do so directly and handle the response yourself:
+
+```javascript
+const predictionId = 'n5eiqe47djb5bg53f35tsyzls5';
+const response = replicate.getPrediction(predictionId);
+```
+
+By default, this library uses fetch (polyfilled with node-fetch in node < 18), but you can override this behavior and use your own HTTP client by defining your own get and post methods.
+
+These methods are called whenever an HTTP request (get or post) would be made, assuming that you will make the actual request yourself with the provided `url` and `body` (for post requests). Methods must be asynchronous and must return the JSON response body.
+
+`token` is available for use in headers. `event` is is a string specifying the context under which an HTTP request is made. Possible values are: 
+
+* getModel - When fetching model details.
+* startPrediction - When starting a new prediction.
+* getPrediction - When checking the status of a prediction (ocurrs regularly due to polling)
+
+```javascript
+// Example using axios instead of fetch
+import axios from 'axios';
+
+const httpClient = {
+    // Method arguments use object destructuring
+    // All arguments are optional, can be in any order, but cannot be renamed
+    get: async ({url, token, event}) => {
+        const response = await axios.get(url, {headers: {'Authorization': `Token ${token}`}})
+        console.log(`Handling ${event} event`); // Possible values: getModel, getPrediction
+        return response.data;
+    },
+    post: async ({url, body, token, event}) => {
+        const response = await axios.post(url, body, {headers: {'Authorization': `Token ${token}`}})
+        console.log(`Handling ${event} event`); // Possible values: startPrediction
+        return response.data;
+    }
+}
+const replicateAxios = new Replicate({pollingInterval:5000, httpClient: httpClient});
+const model = await replicateAxios.models.get("replicate/hello-world") // getModel event
+const prediction = await model.predict({ text: "test"});// startPrediction, getPrediction events
+
+```
+
 # Installation
 
 ## For Node
@@ -97,8 +157,8 @@ const prediction = await replicate.predict({ text: "test"});
 
 ```html
 <script type="module">
-// replace 0.0.5 with @branch-name or @commit-sha for more specific version
-import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.6/replicate.js"
+// You can specify a specific version, branch, or sha: e.g. "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.6/replicate.js"
+import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js/replicate.js"
 </script>
 ```
 
@@ -109,7 +169,7 @@ import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js
 In a Node.js environment, you can set the `REPLICATE_API_TOKEN` environment variable to your API token. 
 For example, by running this before any Javascript that uses the API: `export REPLICATE_API_TOKEN=<your token>`.
 
-You can also pass your API token directly to the Replicate constructor.
+Alternatively, you can pass your API token directly to the Replicate constructor. This takes precendence over the environment variable.
 
 ```javascript
 const replicate = new Replicate({token: 'YOUR_TOKEN'});
