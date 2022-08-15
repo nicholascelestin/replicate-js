@@ -1,18 +1,17 @@
 {
   "name": "replicate-js",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "description": "WIP Replicate JS Client",
   "main": "replicate.js",
   "type": "module",
   "dependencies": {
-    "axios": "^0.27.2",
     "express": "^4.18.1",
-    "http-proxy-middleware": "^2.0.6",
-    "node-fetch": "^3.2.6"
+    "http-proxy-middleware": "^2.0.6"
   },
   "scripts": {
     "test": "ava replicate.test.js",
-    "e2e": "ava replicate.e2e.js --timeout=5m"
+    "e2e-node": "ava replicate.e2e.js --timeout=5m",
+    "e2e-browser": "ava replicate.browser.e2e.js --timeout=5m"
   },
   "repository": {
     "type": "git",
@@ -25,6 +24,9 @@
   },
   "homepage": "https://github.com/nicholascelestin/replicate-js#readme",
   "devDependencies": {
-    "ava": "^4.3.1"
+    "ava": "^4.3.1",
+    "axios": "^0.27.2",
+    "node-fetch": "^3.2.6",
+    "puppeteer": "^16.1.0"
   }
 }

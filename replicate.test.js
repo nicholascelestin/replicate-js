@@ -1,20 +1,20 @@
 import test from 'ava';
 import Replicate from './replicate.js';
-import {HTTPClient} from './replicate.js'
+import { DefaultFetchHTTPClient } from './replicate.js'
 
 // Takes an object of shape {httpVerb: [response1, response2], ...}
 // And mocks a client with methods that returns responses in that order
 class MockHttpClient {
-    constructor(httpResponseMocks){
+    constructor(httpResponseMocks) {
         for (const [httpVerb, mockedResponse] of Object.entries(httpResponseMocks)) {
             const timelineOfResponses = mockedResponse instanceof Array ? mockedResponse : [mockedResponse];
             const currentResponseIndex = 0;
-            const mockedHttpFunction = () => 
+            const mockedHttpFunction = () =>
                 this[`${httpVerb}Response`][this[`${httpVerb}Index`]++]
             this[httpVerb] = mockedHttpFunction;
             this[`${httpVerb}Index`] = currentResponseIndex;
             this[`${httpVerb}Response`] = timelineOfResponses;
-          }
+        }
     }
 }
 
@@ -69,14 +69,14 @@ test('makes a prediction', async t => {
 
 
 test('built-in http client gets & posts', async t => {
-    globalThis.fetch = (calledUrl, usedOptions) => Promise.resolve({json: ()=> [calledUrl, usedOptions]});
-    const httpClient = new HTTPClient({proxyUrl: 'http://localhost:3000', token: 'abctoken'});
+    globalThis.fetch = (calledUrl, usedOptions) => Promise.resolve({ json: () => [calledUrl, usedOptions] });
+    const httpClient = new DefaultFetchHTTPClient('abctoken');
 
-    var [calledUrl, usedOptions] = await httpClient.get('/versions');
-    t.is(calledUrl,'http://localhost:3000/https://api.replicate.com/v1/versions')
+    var [calledUrl, usedOptions] = await httpClient.get({url: 'https://api.replicate.com/v1/versions'});
+    t.is(calledUrl, 'https://api.replicate.com/v1/versions')
     t.is(usedOptions.headers.Authorization, 'Token abctoken')
 
-    var [calledUrl, usedOptions] = await httpClient.post('/predictions', {});
+    var [calledUrl, usedOptions] = await httpClient.post({url:'/predictions', body:{}});
     t.is(usedOptions.body, '{}') //?
 })
 
