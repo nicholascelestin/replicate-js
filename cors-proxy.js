@@ -11,7 +11,7 @@ const appendAuthHeaders = (proxyReq) => {
 const onProxyRes = (proxyRes) => {
     proxyRes.headers['Access-Control-Allow-Origin'] = '*';
     proxyRes.headers['Access-Control-Allow-Headers'] = '*';
-    delete proxyRes.headers['content-type']; 
+    delete proxyRes.headers['content-type'];
 }
 
 const app = express();
@@ -25,4 +25,9 @@ app.use(
         onProxyRes: onProxyRes
     })
 );
-app.listen(3000);
+app.listen(3000, () => {
+    console.log('Proxy Started')
+    if (process.send) {
+        process.send("ready");
+    }
+});
