@@ -3,6 +3,7 @@
   "version": "0.0.7",
   "description": "WIP Replicate JS Client",
   "main": "replicate.js",
+  "types": "replicate.d.ts",
   "type": "module",
   "dependencies": {
     "express": "^4.18.1",
