@@ -27,7 +27,8 @@ const browser = test.macro(async (t: ExecutionContext, testFunction) => {
 });
 
 test("calls the hello world model", browser, async (t: ExecutionContext) => {
-  const Replicate = (await import("http://replicate.js"))["default"]; // @ts-ignore
+  // @ts-ignore
+  const Replicate = (await import("http://replicate.js"))["default"];
   const replicate = new Replicate({
     proxyUrl: "http://localhost:3000/api",
     pollingInterval: 1000,
