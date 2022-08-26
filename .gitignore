@@ -1,3 +1,9 @@
+# Built files
+examples/*.js
+lib/*.js
+replicat*.js
+cors-proxy.js
+
 node_modules
 .idea
 wallaby.js

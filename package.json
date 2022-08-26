@@ -1,6 +1,6 @@
 {
   "name": "replicate-js",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "WIP Replicate JS Client",
   "main": "replicate.js",
   "type": "module",
@@ -9,6 +9,7 @@
     "http-proxy-middleware": "^2.0.6"
   },
   "scripts": {
+    "prepare": "tsc && npm test",
     "test": "ava replicate.test.ts",
     "e2e-node": "ava replicate.node.e2e.ts --timeout=5m",
     "e2e-browser": "ava replicate.browser.e2e.ts --timeout=5m"
