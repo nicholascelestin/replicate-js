@@ -1,6 +1,6 @@
 # Replicate Javascript client
 
-This is a Javacript client for Replicate. It lets you run models from your browser, from node, or from a web worker. It is promise-based and designed with async / await in mind.
+This is a Javacript client for Replicate, written in TypeScript. It lets you run models from your browser, from node, or from a web worker. It is promise-based and designed with async / await in mind.
 
 # Getting Started
 
@@ -33,7 +33,7 @@ Works with Node v16 and up.
 
 Depends on node-fetch.
 
-Uses ES6-style module imports. Either set `type` to `module` in your package.json file or use a `.mjs` file extension
+Uses ES6-style module imports. Either set `type` to `module` in your package.json file or use a `.mjs` file extension.
 
 ```javascript
 import Replicate from 'replicate-js'
@@ -94,7 +94,6 @@ const modelName = 'replicate/hello-world'
 const response = await replicate.getModel(modelName);
 const mostRecentVersion = response.results[0].id;
 ```
-
 
 If you know the specific version of the model you want to call, you can start a prediction directly and handle the response yourself:
 
@@ -192,7 +191,7 @@ However, for private development and testing, you can use the lightweight proxy 
 
 ```html
 <script type="module">
-    import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.6/replicate.js"
+    import Replicate from "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js/replicate.js"
     let replicate = new Replicate({proxyUrl: 'http://localhost:3000/api'});
 </script>
 ```

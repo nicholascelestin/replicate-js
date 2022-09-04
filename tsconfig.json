@@ -1,4 +1,5 @@
 {
+  "exclude": ["**/*.test.ts", "**/*.e2e.ts"],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 

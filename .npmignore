@@ -1,7 +1,7 @@
 # Include built files
 !examples/*.js
 !lib/*.js
-!replicat*.js
+!replicate*.js
 !cors-proxy.js
 !**/*.d.ts
 !**/*.d.ts.map

@@ -1,5 +1,5 @@
 import test from "ava";
-import Replicate, { DefaultFetchHTTPClient } from "./replicate.js";
+import Replicate, { HTTPClient } from "./replicate.js";
 import axios from "axios";
 
 // Set REPLICATE_API_TOKEN environment variable before running.
@@ -13,7 +13,7 @@ test("calls the hello world model", async (t) => {
 });
 
 test("calls the hello world model with axios", async (t) => {
-  const httpClient: DefaultFetchHTTPClient = {
+  const httpClient: HTTPClient = {
     // Method arguments use object destructuring
     // All arguments are optional, can be in any order, but cannot be renamed
     get: async ({ url, token, event }) => {
@@ -30,7 +30,7 @@ test("calls the hello world model with axios", async (t) => {
       t.log(`Handling ${event} event`); // Possible values: startPrediction
       return response.data;
     },
-  } as any;
+  };
   const replicateAxios = new Replicate({
     pollingInterval: 5000,
     httpClient: httpClient,

@@ -1,12 +1,10 @@
-import test, { ExecutionContext as _ExecutionContext } from "ava";
+import anyTest, { TestFn } from "ava";
 import HeadlessBrowser from "./lib/headless-browser.js";
 import { fork } from "child_process";
 
-interface ExecutionContext extends _ExecutionContext {
-  context: any;
-}
+const test = anyTest as TestFn<{ proxy: any; browser: any }>;
 
-test.before("start proxy server", async (t: ExecutionContext) => {
+test.before("start proxy server", async (t) => {
   const process = fork("cors-proxy.js", { silent: true });
   t.context.proxy = await new Promise((resolve, reject) => {
     process.on("message", (message) =>
@@ -14,19 +12,19 @@ test.before("start proxy server", async (t: ExecutionContext) => {
     );
   });
 });
+
 test.before(
   "start browser",
-  async (t: ExecutionContext) =>
-    (t.context.browser = await HeadlessBrowser.startBrowser())
+  async (t) => (t.context.browser = await HeadlessBrowser.startBrowser())
 );
 
-const browser = test.macro(async (t: ExecutionContext, testFunction) => {
+const browser = test.macro(async (t, testFunction) => {
   const browser = t.context.browser;
-  browser.serveJavascriptFile("replicate.js");
+  await browser.serveJavascriptFile("replicate.js");
   return await browser.runScript(testFunction, t);
 });
 
-test("calls the hello world model", browser, async (t: ExecutionContext) => {
+test("calls the hello world model", browser, async (t) => {
   // @ts-ignore
   const Replicate = (await import("http://replicate.js"))["default"];
   const replicate = new Replicate({
@@ -39,9 +37,5 @@ test("calls the hello world model", browser, async (t: ExecutionContext) => {
   t.is(prediction, "hello test");
 });
 
-test.after.always("stop proxy server", async (t: ExecutionContext) =>
-  t.context.proxy.kill()
-);
-test.after.always("stop browser", async (t: ExecutionContext) =>
-  t.context.browser.close()
-);
+test.after.always("stop proxy server", async (t) => t.context.proxy.kill());
+test.after.always("stop browser", async (t) => t.context.browser.close());

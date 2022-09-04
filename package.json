@@ -10,7 +10,7 @@
     "http-proxy-middleware": "^2.0.6"
   },
   "scripts": {
-    "prepare": "tsc && npm test",
+    "build": "tsc && npm test",
     "test": "ava replicate.test.ts",
     "e2e-node": "ava replicate.node.e2e.ts --timeout=5m",
     "e2e-browser": "ava replicate.browser.e2e.ts --timeout=5m"
@@ -32,14 +32,17 @@
     "axios": "^0.27.2",
     "js-to-ts-converter": "^0.18.2",
     "node-fetch": "^3.2.6",
+    "prettier": "2.7.1",
     "puppeteer": "^16.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.8.2"
   },
   "ava": {
     "extensions": {
       "ts": "module"
     },
-    "nodeArguments": ["--loader=ts-node/esm"]
+    "nodeArguments": [
+      "--loader=ts-node/esm"
+    ]
   }
 }

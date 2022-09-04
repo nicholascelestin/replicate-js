@@ -1,45 +1,31 @@
-const BASE_URL: string = "https://api.replicate.com/v1";
-const DEFAULT_POLLING_INTERVAL: number = 5000;
+// Default configuration
+const BASE_URL = "https://api.replicate.com/v1";
+const DEFAULT_POLLING_INTERVAL = 5000;
 
+// Utility functions
 const sleep: (ms: number) => Promise<void> = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 const isNode: boolean =
-  typeof process !== "undefined" &&
-  process.versions != null &&
-  process.versions.node != null;
+  typeof process !== "undefined" && process.versions != null && process.versions.node != null;
 
-export interface ReplicateProps {
+// Replicate class
+export type PredictionStatus = "starting" | "processing" | "succeeded" | "failed" | "canceled";
+export type PredictionInput = string | Record<string, any> | any[];
+export type PredictionOutput = PredictionInput;
+export interface ReplicateInputProps {
   token?: string;
   baseUrl?: string;
   proxyUrl?: string;
-  httpClient?: DefaultFetchHTTPClient;
+  httpClient?: HTTPClient;
   pollingInterval?: number;
-  models?: {
-    get: (path: string, version?: string) => Promise<Model>;
-  };
 }
-
-export interface CustomRequest {
-  url?: string;
-  method?: "get" | "post";
-  token?: string;
-  event?: string;
-  body?: Record<string, any>;
-}
+export interface Replicate extends ReplicateInputProps {}
 
 export class Replicate {
-  public token: ReplicateProps["token"];
-  public baseUrl: ReplicateProps["baseUrl"];
-  public httpClient: ReplicateProps["httpClient"];
-  public pollingInterval: ReplicateProps["pollingInterval"];
-  public models: ReplicateProps["models"];
-
-  constructor({
-    token,
-    proxyUrl,
-    httpClient,
-    pollingInterval,
-  }: ReplicateProps = {}) {
+  models: {
+    get: (path: string, version?: string) => Promise<Model>;
+  };
+  constructor({ token, proxyUrl, httpClient, pollingInterval }: ReplicateInputProps = {}) {
     this.token = token;
     this.baseUrl = proxyUrl ? `${proxyUrl}/${BASE_URL}` : BASE_URL;
     this.httpClient = httpClient;
@@ -51,86 +37,65 @@ export class Replicate {
 
     if (!this.token && !proxyUrl) throw new Error("Missing Replicate token");
 
-    if (!this.httpClient)
-      this.httpClient = new DefaultFetchHTTPClient(this.token);
+    if (!this.httpClient) this.httpClient = new DefaultFetchHTTPClient(this.token);
 
-    // Syntax sugar to support replicate.models.get()
     this.models = {
-      get: (path, version = null) =>
-        Model.fetch({ path, version, replicate: this }),
+      get: (path, version = null) => Model.fetch({ path, version, replicate: this }),
     };
   }
 
-  async callHttpClient({ url, method, event, body }: CustomRequest) {
-    url = `${this.baseUrl}${url}`;
+  async getModel(path: string) {
+    return await this.callHttpClient({
+      url: `/models/${path}/versions`,
+      method: "get",
+      event: "getModel",
+    });
+  }
+
+  async getPrediction(id: string) {
+    return await this.callHttpClient({
+      url: `/predictions/${id}`,
+      method: "get",
+      event: "getPrediction",
+    });
+  }
+
+  async startPrediction(modelVersion: string, input: PredictionInput) {
+    return await this.callHttpClient({
+      url: "/predictions",
+      method: "post",
+      event: "startPrediction",
+      body: { version: modelVersion, input: input },
+    });
+  }
+
+  protected async callHttpClient({ url, method, event, body }: HTTPClientRequest) {
     return await this.httpClient[method]({
-      url,
+      url: `${this.baseUrl}${url}`,
+      method,
       event,
       body,
       token: this.token,
     });
   }
-
-  async getModel(path: string) {
-    const request: CustomRequest = {
-      url: `/models/${path}/versions`,
-      method: "get",
-      event: "getModelDetails",
-    };
-    return await this.callHttpClient(request);
-  }
-
-  async getPrediction(id: string): Promise<any> {
-    const request: CustomRequest = {
-      url: `/predictions/${id}`,
-      method: "get",
-      event: "getPrediction",
-    };
-    return await this.callHttpClient(request);
-  }
-
-  async startPrediction(
-    modelVersion: string,
-    input: string | Record<string, any> | any[]
-  ) {
-    const body = { version: modelVersion, input: input };
-    const request: CustomRequest = {
-      url: "/predictions",
-      method: "post",
-      event: "startPrediction",
-      body,
-    };
-    return await this.callHttpClient(request);
-  }
 }
 
-export interface ModelProps {
+// Model class
+export interface ModelInputProps {
   path: string;
   version: string;
   replicate?: any;
   modelDetails?: any;
 }
-
-export type PredictionStatus =
-  | "starting"
-  | "processing"
-  | "succeeded"
-  | "failed"
-  | "canceled";
-
+export interface Model extends ModelInputProps {}
 export class Model {
-  public path: ModelProps["path"];
-  public version: ModelProps["version"];
-  public replicate: ModelProps["replicate"];
-  public modelDetails: ModelProps["modelDetails"];
-
-  static async fetch(options: ModelProps): Promise<Model> {
+  static async fetch(options: ModelInputProps): Promise<Model> {
     const model = new Model(options);
     await model.getModelDetails();
     return model;
   }
 
-  constructor({ path, version, replicate }: ModelProps) {
+  constructor({ path, version, replicate }: ModelInputProps) {
     this.path = path;
     this.version = version;
     this.replicate = replicate;
@@ -143,9 +108,7 @@ export class Model {
     const explicitlySelectedVersion = modelVersions.find(
       (m: { id: string }) => m.id == this.version
     );
-    this.modelDetails = explicitlySelectedVersion
-      ? explicitlySelectedVersion
-      : mostRecentVersion;
+    this.modelDetails = explicitlySelectedVersion ? explicitlySelectedVersion : mostRecentVersion;
     if (this.version && this.version !== this.modelDetails.id) {
       console.warn(
         `Model (version:${this.version}) not found, defaulting to ${mostRecentVersion.id}`
@@ -153,16 +116,11 @@ export class Model {
     }
   }
 
-  async *predictor(input: string | Record<string, any> | any[]) {
-    const startResponse = await this.replicate.startPrediction(
-      this.modelDetails.id,
-      input
-    );
+  async *predictor(input: PredictionInput) {
+    const startResponse = await this.replicate.startPrediction(this.modelDetails.id, input);
     let predictionStatus: PredictionStatus;
     do {
-      const checkResponse = await this.replicate.getPrediction(
-        startResponse.id
-      );
+      const checkResponse = await this.replicate.getPrediction(startResponse.id);
       predictionStatus = checkResponse.status;
       await sleep(this.replicate.pollingInterval);
       // TODO: only yield if there is a new prediction
@@ -170,10 +128,8 @@ export class Model {
     } while (["starting", "processing"].includes(predictionStatus));
   }
 
-  async predict(
-    input: string | Record<string, any> | any[] = ""
-  ): Promise<any> {
-    let prediction: PredictionStatus;
+  async predict(input: PredictionInput = "") {
+    let prediction;
     for await (prediction of this.predictor(input)) {
       // console.log(prediction);
     }
@@ -181,8 +137,22 @@ export class Model {
   }
 }
 
+// HTTP CLIENT
+export interface HTTPClientRequest {
+  url: string;
+  method: "get" | "post";
+  event: "getModel" | "startPrediction" | "getPrediction";
+  body?: Record<string, any>;
+}
+interface HTTPClientAuthenticatedRequest extends HTTPClientRequest {
+  token: string;
+}
+export interface HTTPClient {
+  get: (request: HTTPClientAuthenticatedRequest) => Promise<any>;
+  post: (request: HTTPClientAuthenticatedRequest) => Promise<any>;
+}
 // This class just makes it a bit easier to call fetch -- interface similar to the axios library
-export class DefaultFetchHTTPClient {
+export class DefaultFetchHTTPClient implements HTTPClient {
   public headers: Record<string, string>;
 
   constructor(token: string) {
@@ -199,13 +169,13 @@ export class DefaultFetchHTTPClient {
       globalThis.fetch = (await import("node-fetch"))["default"] as any;
   }
 
-  async get({ url }: CustomRequest): Promise<any> {
+  async get({ url }: HTTPClientAuthenticatedRequest): Promise<any> {
     await this.importFetch();
     const response = await fetch(url, { headers: this.headers });
     return await response.json();
   }
 
-  async post({ url, body }: CustomRequest): Promise<any> {
+  async post({ url, body }: HTTPClientAuthenticatedRequest): Promise<any> {
     await this.importFetch();
     const fetchOptions = {
       method: "POST",

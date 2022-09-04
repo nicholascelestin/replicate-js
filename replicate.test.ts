@@ -1,11 +1,14 @@
 import test from "ava";
 import Replicate from "./replicate.js";
-import { DefaultFetchHTTPClient } from "./replicate.js";
+import { DefaultFetchHTTPClient, HTTPClient } from "./replicate.js";
 
-// Takes an object of shape {httpVerb: [response1, response2], ...}
-// And mocks a client with methods that returns responses in that order
+interface HTTPResponseMocks {
+  get?: string | Record<string, any> | any[];
+  post?: string | Record<string, any> | any[];
+}
+interface MockHttpClient extends HTTPClient {}
 class MockHttpClient {
-  constructor(httpResponseMocks) {
+  constructor(httpResponseMocks: HTTPResponseMocks) {
     for (const [httpVerb, mockedResponse] of Object.entries(
       httpResponseMocks
     )) {
@@ -13,7 +16,9 @@ class MockHttpClient {
         mockedResponse instanceof Array ? mockedResponse : [mockedResponse];
       const currentResponseIndex = 0;
       const mockedHttpFunction = () =>
-        this[`${httpVerb}Response`][this[`${httpVerb}Index`]++];
+        Promise.resolve(
+          this[`${httpVerb}Response`][this[`${httpVerb}Index`]++]
+        );
       this[httpVerb] = mockedHttpFunction;
       this[`${httpVerb}Index`] = currentResponseIndex;
       this[`${httpVerb}Response`] = timelineOfResponses;
@@ -25,7 +30,7 @@ class MockHttpClient {
 globalThis.process.env = {};
 test("complains if no token or proxy url provided", (t) => {
   const error = t.throws(() => new Replicate());
-  t.is(error.message, "Missing Replicate token");
+  t.is(error?.message, "Missing Replicate token");
 });
 
 test("accepts a manual token", (t) => {
@@ -43,31 +48,31 @@ test("accepts a proxy url in lieu of a token", (t) => {
 });
 
 test("fetches details of a model", async (t) => {
-  const client: DefaultFetchHTTPClient = new MockHttpClient({
+  const client = new MockHttpClient({
     get: { results: [{ id: "1" }] },
-  }) as any;
+  });
   const replicate = new Replicate({ httpClient: client, token: "abctoken" });
   const model = await replicate.models.get("kuprel/min-dalle");
   t.is(model.modelDetails.id, "1");
 });
 
 test("fetches details of a model of a specific version", async (t) => {
-  const client: DefaultFetchHTTPClient = new MockHttpClient({
+  const client = new MockHttpClient({
     get: { results: [{ id: "1" }] },
-  }) as any;
+  });
   const replicate = new Replicate({ httpClient: client, token: "abctoken" });
   const model = await replicate.models.get("kuprel/min-dalle", "1");
   t.is(model.modelDetails.id, "1");
 });
 
 test("makes a prediction", async (t) => {
-  const client: DefaultFetchHTTPClient = new MockHttpClient({
+  const client = new MockHttpClient({
     get: [
       { results: [{ id: "1" }] }, // response for /versions
       { status: "succeeded", output: "expectedoutput" }, // for predictions/{id}
     ],
     post: { status: "starting" },
-  }) as any;
+  });
   const replicate = new Replicate({
     httpClient: client,
     token: "abctoken",
@@ -85,12 +90,18 @@ test("built-in http client gets & posts", async (t) => {
 
   var [calledUrl, usedOptions] = await httpClient.get({
     url: "https://api.replicate.com/v1/versions",
+    token: "",
+    method: "get",
+    event: "getModel",
   });
   t.is(calledUrl, "https://api.replicate.com/v1/versions");
   t.is(usedOptions.headers.Authorization, "Token abctoken");
 
   var [calledUrl, usedOptions] = await httpClient.post({
     url: "/predictions",
+    token: "",
+    method: "post",
+    event: "startPrediction",
     body: {},
   });
   t.is(usedOptions.body, "{}"); //?
