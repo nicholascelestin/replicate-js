@@ -22,6 +22,6 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-      - run: npm build
+      - run: npm run build
       - run: npm run e2e-node
       - run: npm run e2e-browser
