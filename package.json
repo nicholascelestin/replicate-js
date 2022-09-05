@@ -28,7 +28,7 @@
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "@types/express": "^4.17.13",
-    "ava": "^4.3.1",
+    "ava": "^4.3.3",
     "axios": "^0.27.2",
     "js-to-ts-converter": "^0.18.2",
     "node-fetch": "^3.2.6",
