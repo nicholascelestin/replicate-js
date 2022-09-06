@@ -1,0 +1,14 @@
+# Include built files
+!examples/*.js
+!lib/*.js
+!replicate*.js
+!cors-proxy.js
+!**/*.d.ts
+!**/*.d.ts.map
+
+node_modules
+.idea
+wallaby.js
+sandbox.js
+replicate-js.code-workspace
+.vscode/launch.json

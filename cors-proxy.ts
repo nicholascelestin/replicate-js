@@ -1,0 +1,33 @@
+import express from 'express'
+import  {createProxyMiddleware}  from 'http-proxy-middleware';
+
+// Configuration
+const REPLICATE_TOKEN = process.env.REPLICATE_API_TOKEN;
+
+const appendAuthHeaders = (proxyReq) => {
+    proxyReq.setHeader('Authorization', `Token ${REPLICATE_TOKEN}`)
+}
+
+const onProxyRes = (proxyRes) => {
+    proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+    proxyRes.headers['Access-Control-Allow-Headers'] = '*';
+    delete proxyRes.headers['content-type'];
+}
+
+const app = express();
+app.use(
+    '/api/',
+    createProxyMiddleware({
+        router: (req) => req.originalUrl.replace(/.*https?:\/\//, 'https://'),
+        changeOrigin: true,
+        pathRewrite: {'.*' : ''},
+        onProxyReq: appendAuthHeaders,
+        onProxyRes: onProxyRes
+    })
+);
+app.listen(3000, () => {
+    console.log('Proxy Started')
+    if (process.send) {
+        process.send("ready");
+    }
+});
