@@ -7,7 +7,8 @@
   "type": "module",
   "dependencies": {
     "express": "^4.18.1",
-    "http-proxy-middleware": "^2.0.6"
+    "http-proxy-middleware": "^2.0.6",
+    "node-fetch": "^3.2.6"
   },
   "scripts": {
     "build": "tsc && npm test",
@@ -31,7 +32,6 @@
     "ava": "^4.3.3",
     "axios": "^0.27.2",
     "js-to-ts-converter": "^0.18.2",
-    "node-fetch": "^3.2.6",
     "prettier": "2.7.1",
     "puppeteer": "^16.1.0",
     "ts-node": "^10.9.1",
