@@ -11,10 +11,12 @@
     "node-fetch": "^3.2.6"
   },
   "scripts": {
-    "build": "tsc && npm test",
-    "test": "ava replicate.test.ts",
-    "e2e-node": "ava replicate.node.e2e.ts --timeout=5m",
-    "e2e-browser": "ava replicate.browser.e2e.ts --timeout=5m"
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "test:unit": "ava replicate.test.ts",
+    "test:e2e-node": "ava replicate.node.e2e.ts --timeout=5m",
+    "test:e2e-browser": "ava replicate.browser.e2e.ts --timeout=5m",
+    "test:all": "npm run test:unit && npm run test:e2e-node && npm run test:e2e-browser"
   },
   "repository": {
     "type": "git",

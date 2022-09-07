@@ -23,7 +23,7 @@ export interface Replicate extends ReplicateInputProps {}
 
 export class Replicate {
   models: {
-    get: (path: string, version?: string) => Promise<Model>;
+    get: (path: string, version?: string) => Promise<ReplicateModel>;
   };
   constructor({ token, proxyUrl, httpClient, pollingInterval }: ReplicateInputProps = {}) {
     this.token = token;
@@ -40,7 +40,7 @@ export class Replicate {
     if (!this.httpClient) this.httpClient = new DefaultFetchHTTPClient(this.token);
 
     this.models = {
-      get: (path, version = null) => Model.fetch({ path, version, replicate: this }),
+      get: (path, version = null) => ReplicateModel.fetch({ path, version, replicate: this }),
     };
   }
 
@@ -81,21 +81,21 @@ export class Replicate {
 }
 
 // Model class
-export interface ModelInputProps {
+export interface ReplicateModelInputs {
   path: string;
   version: string;
   replicate?: any;
   modelDetails?: any;
 }
-export interface Model extends ModelInputProps {}
-export class Model {
-  static async fetch(options: ModelInputProps): Promise<Model> {
-    const model = new Model(options);
+export interface ReplicateModel extends ReplicateModelInputs {}
+export class ReplicateModel {
+  static async fetch(options: ReplicateModelInputs): Promise<ReplicateModel> {
+    const model = new ReplicateModel(options);
     await model.getModelDetails();
     return model;
   }
 
-  constructor({ path, version, replicate }: ModelInputProps) {
+  constructor({ path, version, replicate }: ReplicateModelInputs) {
     this.path = path;
     this.version = version;
     this.replicate = replicate;

@@ -18,7 +18,7 @@ export class Replicate {
         if (!this.httpClient)
             this.httpClient = new DefaultFetchHTTPClient(this.token);
         this.models = {
-            get: (path, version = null) => Model.fetch({ path, version, replicate: this }),
+            get: (path, version = null) => ReplicateModel.fetch({ path, version, replicate: this }),
         };
     }
     async getModel(path) {
@@ -53,9 +53,9 @@ export class Replicate {
         });
     }
 }
-export class Model {
+export class ReplicateModel {
     static async fetch(options) {
-        const model = new Model(options);
+        const model = new ReplicateModel(options);
         await model.getModelDetails();
         return model;
     }
