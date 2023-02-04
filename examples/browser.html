@@ -3,7 +3,7 @@
     <body>
         <script type="module">
         // You can specify a specific version, branch, or sha: e.g. "https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js@0.0.6/replicate.js"
-        const Replicate = await import("https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js/replicate.js")
+        const {default: Replicate} = await import("https://cdn.jsdelivr.net/gh/nicholascelestin/replicate-js/replicate.js")
         console.log(Replicate)
     
         // set REPLICATE_API_TOKEN environment variable
