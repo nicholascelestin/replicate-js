@@ -103,7 +103,9 @@ export class ReplicateModel {
 
   async getModelDetails() {
     const response = await this.replicate.getModel(this.path);
-    const modelVersions = response.results;
+    if (response.detail === "Not found.") {
+        throw new Error(`Model "${this.path}" not found`)
+    }    const modelVersions = response.results;
     const mostRecentVersion = modelVersions[0];
     const explicitlySelectedVersion = modelVersions.find(
       (m: { id: string }) => m.id == this.version
